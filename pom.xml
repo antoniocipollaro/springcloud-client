@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://maven.apache.org/POM/4.0.0"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>2.3.9.RELEASE</version>
+	</parent>
+
+	<groupId>it.cipollaro</groupId>
+	<artifactId>spring-boot-client</artifactId>
+	<version>1.0.0</version>
+	<name>Spring Boot - Openshift examples - Client Service </name>
+	<packaging>jar</packaging>
+
+	<description>
+    Spring Boot Web application with examples of the use of Kubernetes server side Load Balacing. 
+	Using JKube for distribution ops.
+  </description>
+
+	<properties>
+		<jkube.version>${project.version}</jkube.version>
+		<spring-cloud-starter-kubernetes-version>1.1.8.RELEASE</spring-cloud-starter-kubernetes-version>
+	</properties>
+
+	<distributionManagement>
+		<snapshotRepository>
+			<id>sonatype-nexus-snapshots</id>
+			<name>Sonatype Nexus Snapshots</name>
+			<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+		</snapshotRepository>
+		<repository>
+			<id>sonatype-nexus-staging</id>
+			<name>Nexus Release Repository</name>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+		</repository>
+	</distributionManagement>
+
+	<dependencies>
+		<!-- Boot generator -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-kubernetes</artifactId>
+			<version>${spring-cloud-starter-kubernetes-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jolokia</groupId>
+			<artifactId>jolokia-core</artifactId>
+		</dependency>
+<!-- 		<dependency> -->
+<!-- 			<groupId>org.springframework.cloud</groupId> -->
+<!-- 			<artifactId>spring-cloud-starter-kubernetes-fabric8</artifactId> -->
+<!-- 			<version>${spring-cloud-starter-kubernetes-version}</version> -->
+<!-- 		</dependency> -->
+<!-- 		<dependency> -->
+<!-- 			<groupId>org.springframework.cloud</groupId> -->
+<!-- 			<artifactId>spring-cloud-starter-kubernetes-client</artifactId> -->
+<!-- 			<version>${spring-cloud-starter-kubernetes-version}</version> -->
+<!-- 		</dependency> -->
+	</dependencies>
+
+	<build>
+		<plugins>
+
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+
+
+		</plugins>
+	</build>
+
+	<profiles>
+		<profile>
+			<id>openshift</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.eclipse.jkube</groupId>
+						<artifactId>openshift-maven-plugin</artifactId>
+						<version>${jkube.version}</version>
+
+						<configuration>
+							<resources>
+								<labels>
+									<all>
+										<testProject>spring-boot-sample-client</testProject>
+									</all>
+								</labels>
+							</resources>
+
+							<generator>
+								<includes>
+									<include>spring-boot</include>
+								</includes>
+								<config>
+									<spring-boot>
+										<color>always</color>
+									</spring-boot>
+								</config>
+							</generator>
+							<enricher>
+								<excludes>
+									<exclude>jkube-expose</exclude>
+								</excludes>
+								<config>
+									<jkube-service>
+										<type>LoadBalancer</type>
+										<!-- Decommentare la riga sotto per ottenere un loadbalancing riferito 
+											al solo cluster -->
+										<!-- <type>NodePort</type> -->
+									</jkube-service>
+								</config>
+							</enricher>
+						</configuration>
+
+						<executions>
+							<execution>
+								<goals>
+									<goal>resource</goal>
+									<goal>build</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+</project>
