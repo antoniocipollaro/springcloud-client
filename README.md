@@ -4,11 +4,11 @@ This client example is useful in showing the plain integration between Kubernete
 
 - Service Discovery
 
-##To start: 
+## To start: 
 1) Login on openshift with CLI standard command
 2) Use  "mvn oc:deploy -Popenshift" to activate JKube plugin  
 
-##Service Discovery
+## Service Discovery
 
 To enable service discovery are imported dependencies with: 
 
